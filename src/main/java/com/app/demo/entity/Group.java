@@ -39,6 +39,10 @@ public class Group {
 	}
 
 
+	public Param getName() {
+		return name;
+	}
+
 	public User getUser() {
 		return user;
 	}

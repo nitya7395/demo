@@ -1,5 +1,8 @@
 package com.app.demo.config;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -17,9 +20,11 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 import org.springframework.web.cors.CorsConfiguration;
+import org.springframework.web.cors.CorsConfigurationSource;
 import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 import org.springframework.web.filter.CorsFilter;
 import org.springframework.web.servlet.config.annotation.CorsRegistry;
+
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 
 import com.app.demo.service.UserDetailsServiceImpl;
@@ -62,16 +67,16 @@ public class WebSecurityConfig implements WebMvcConfigurer {
   
   @Bean
   public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
-    http.csrf().disable().cors().disable()
-//        .exceptionHandling(exception -> exception.authenticationEntryPoint(unauthorizedHandler))
-//        .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
+    http.csrf().disable().cors().configurationSource(corsConfigurationSource())
+    .and()
+        .exceptionHandling(exception -> exception.authenticationEntryPoint(unauthorizedHandler))
+        .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
         .authorizeHttpRequests(auth -> 
           auth.requestMatchers("/api/auth/**").permitAll()
               .requestMatchers("/api/auth/add-user").permitAll()
               .requestMatchers("/api/auth/signin").permitAll()
               .anyRequest().authenticated()
         );
-    //    .requestMatchers("/api/groups").permitAll()
     http.authenticationProvider(authenticationProvider());
 
     http.addFilterBefore(authenticationJwtTokenFilter(), UsernamePasswordAuthenticationFilter.class);
@@ -79,14 +84,32 @@ public class WebSecurityConfig implements WebMvcConfigurer {
     return http.build();
   }
   
+
   
-  public void addCorsMappings(CorsRegistry registry) {
-      registry.addMapping("/**")
-              .allowedOrigins("*")
-              .allowedMethods("*")
-              .allowedHeaders("*");
+  @Bean
+  public CorsConfigurationSource corsConfigurationSource() {
+      final CorsConfiguration configuration = new CorsConfiguration();
+      List<String> method = new ArrayList<String>();
+      method.add("GET");
+      method.add("POST");     
+      method.add("PUT");
+      method.add("DELETE"); 
+      
+      List<String> origin = new ArrayList<String>();
+      origin.add("http://localhost:4200");
+      
+      List<String> headerList = new ArrayList<String>();
+      headerList.add("Authorization");
+      headerList.add("Cache-Control");     
+      headerList.add("Content-Type");
+      configuration.setAllowedOrigins(origin);
+      configuration.setAllowedMethods(method);
+      configuration.setAllowCredentials(true);
+      configuration.setAllowedHeaders(headerList);
+
+      final UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
+      source.registerCorsConfiguration("/**", configuration);
+
+      return source;
   }
- 
-  
-  
 }

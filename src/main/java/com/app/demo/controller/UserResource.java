@@ -1,11 +1,8 @@
 package com.app.demo.controller;
 
-import java.net.URISyntaxException;
 import java.util.List;
-import java.util.Objects;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -32,6 +29,12 @@ public class UserResource {
     public List<User> getAllUsers() {
         return userService.getAllUsers();
     }
+    
+    @GetMapping("/auth/users")
+    public List<User> allUserList() {
+
+  	  return userService.getAllUsers();
+    }
 
     @PostMapping("/user")
     public User createUser(@RequestBody User user) {
@@ -43,8 +46,8 @@ public class UserResource {
         return userService.getUserById(userId);
     }
 
-    @PutMapping("user/{userId}/status")
-    public User updateUserStatus(@PathVariable Long userId, @RequestParam boolean active) {
+    @PostMapping("user/status/{userId}/{active}")
+    public User updateUserStatus(@PathVariable Long userId, @PathVariable boolean active) {
         return userService.updateUserStatus(userId, active);
     }
 

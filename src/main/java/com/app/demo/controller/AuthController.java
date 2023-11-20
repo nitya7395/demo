@@ -24,10 +24,13 @@ import com.app.demo.config.JwtResponse;
 import com.app.demo.config.JwtUtils;
 import com.app.demo.config.MessageResponse;
 import com.app.demo.entity.ERole;
+import com.app.demo.entity.Group;
 import com.app.demo.entity.LoginRequest;
+import com.app.demo.entity.Param;
 import com.app.demo.entity.Role;
 import com.app.demo.entity.SignupRequest;
 import com.app.demo.entity.User;
+import com.app.demo.repository.GroupRepository;
 import com.app.demo.repository.RoleRepository;
 import com.app.demo.repository.UserRepository;
 import com.app.demo.service.UserDetailsImpl;
@@ -43,6 +46,9 @@ public class AuthController {
 
   @Autowired
   UserRepository userRepository;
+  
+  @Autowired
+  GroupRepository groupRepository;
 
   @Autowired
   RoleRepository roleRepository;
@@ -71,11 +77,15 @@ public class AuthController {
         return ResponseEntity.badRequest()
                 .body(new MessageResponse("Error: In Active User!"));
     }
+    List<Group> groupList = groupRepository.findByUserId(userDetails.getId());
+    List<Param> group = groupList.stream()
+            .map(item -> item.getName())
+            .collect(Collectors.toList());
     return ResponseEntity.ok(new JwtResponse(jwt, 
                          userDetails.getId(), 
                          userDetails.getUsername(), 
                          userDetails.getEmail(),userDetails.getIsActive(), 
-                         roles));
+                         roles, group));
   }
   @CrossOrigin(origins = "http://localhost:4200")
   @PostMapping("/add-user")
@@ -121,4 +131,5 @@ public class AuthController {
 
     return ResponseEntity.ok(new MessageResponse("User registered successfully!"));
   }
+ 
 }

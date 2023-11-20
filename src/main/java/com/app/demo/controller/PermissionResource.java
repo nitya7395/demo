@@ -1,6 +1,7 @@
 package com.app.demo.controller;
 
 import java.net.URISyntaxException;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 
@@ -19,6 +20,8 @@ import org.springframework.web.bind.annotation.RestController;
 import com.app.demo.entity.Permision;
 import com.app.demo.service.PermissionService;
 
+import io.jsonwebtoken.lang.Arrays;
+
 
 @RestController
 @RequestMapping("/api")
@@ -28,8 +31,15 @@ public class PermissionResource {
     private PermissionService permissionService;
 
     @GetMapping("/permissions")
-    public List<Permision> getAllPermissions() {
-        return permissionService.getAllPermissions();
+    public List<String> getAllPermissions() {
+    	
+       List<String> myList = new ArrayList<>();
+       myList.add("ADD_GROUP");
+       myList.add("STATUS_CHANGE");
+       myList.add("DELETE_USER");
+     return myList;
+       
+       //   return permissionService.getAllPermissions();
     }
 
     @PostMapping("/permission")

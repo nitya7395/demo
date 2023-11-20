@@ -52,7 +52,6 @@ public class User {
 	@JsonIgnoreProperties(value = "user", allowSetters = true)
 	private Set<Group> groups = new HashSet<>();
 
-
 	@NotBlank
 	@Size(max = 120)
 	private String password;
